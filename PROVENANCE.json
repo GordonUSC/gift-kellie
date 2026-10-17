@@ -1,0 +1,18 @@
+{
+ "img/hero.jpg": {
+  "tool": "higgsfield",
+  "prompt": "ladder up an art deco studio tower at sunrise (job 2f813b7a) gpt_image_2_5"
+ },
+ "snd/rung.mp3": {
+  "tool": "elevenlabs",
+  "prompt": "ladder rung step chime (flow Zsme1gDAAwoH9cLbT2KJ)"
+ },
+ "snd/cheer.mp3": {
+  "tool": "elevenlabs",
+  "prompt": "career panel cheer (flow Zsme1gDAAwoH9cLbT2KJ)"
+ },
+ "snd/bed.mp3": {
+  "tool": "elevenlabs",
+  "prompt": "sunrise indie pop score, eleven_music_v2_5 (flow Zsme1gDAAwoH9cLbT2KJ)"
+ }
+}

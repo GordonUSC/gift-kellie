@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- STYLE: Art deco studio tower at sunrise (cardinal red, warm gold, Poiret One display with Work Sans) | WHY: Kellie runs Industry Week at USC SCA (Oct 26 to 28) and is building the "First Year In" alumni panel with Gordon, so the gift is a ladder up a studio tower where every floor is a first job | ALT: Career fair booth grid, rejected as flat and transactional -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>First Year In</title>
+<meta name="description" content="A climb up the studio tower, for Kellie.">
+<meta property="og:title" content="First Year In, for Kellie">
+<meta property="og:image" content="https://gordonusc.github.io/gift-kellie/img/hero.jpg">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Work+Sans:wght@500;700;800&display=swap">
+<style>
+:root{--gold:#f2c14e;--red:#9d1c20;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1a0606;color:#fff6e8;font:15px/1.45 "Work Sans",system-ui,sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.stage{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:min(100vw,calc(100svh*9/16));overflow:hidden;cursor:pointer}
+.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(.85);transition:filter 1.5s}
+.top-on .bg{filter:brightness(1.05) saturate(1.1)}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.top{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 14px);text-align:center;padding:0 18px;text-shadow:0 2px 14px #000;pointer-events:none}
+.top small{font-weight:800;font-size:11px;letter-spacing:.3em;color:var(--gold)}
+.top h1{font:400 clamp(36px,11vw,52px)/1 "Poiret One",sans-serif;margin:4px 0 6px}
+.top p{margin:0 auto;max-width:28ch}
+.floors{position:absolute;right:12px;top:26%;bottom:16%;display:flex;flex-direction:column-reverse;justify-content:space-between;pointer-events:none}
+.floors span{font:800 12px "Work Sans",sans-serif;letter-spacing:.14em;background:#1a0606cc;border:1px solid #f2c14e55;color:#f2c14e66;border-radius:6px;padding:5px 9px;transition:all .4s;text-align:right}
+.floors span.lit{color:#1a0606;background:var(--gold);border-color:var(--gold);box-shadow:0 0 18px #f2c14e}
+.hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 34px);text-align:center;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--gold);text-shadow:0 2px 8px #000;pointer-events:none}
+.end{position:absolute;left:16px;right:16px;top:36%;text-align:center;padding:18px;border-radius:14px;background:#1a0606e6;border:1px solid var(--gold);opacity:0;transform:translateY(12px);transition:all .8s;pointer-events:none}
+.end.on{opacity:1;transform:none}
+.end h2{font:400 30px/1.1 "Poiret One",sans-serif;margin:0 0 8px;color:var(--gold)}
+.foot{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);text-align:center;font-size:11px;opacity:.75;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <img class="bg" src="img/hero.jpg" alt="A golden ladder climbing an art deco studio tower at sunrise, each floor a soundstage, animation desk or game studio">
+  <canvas id="c"></canvas>
+  <div class="top"><small>FOR KELLIE</small><h1>First Year In</h1><p>Every floor of this tower is somebody's first job. Tap to climb. Sound on.</p></div>
+  <div class="floors" id="floors"><span>FILM</span><span>ANIMATION</span><span>GAMES</span><span>SOUND</span><span>WRITING</span><span>PRODUCING</span></div>
+  <div class="hint" id="hint">TAP TO CLIMB · 0 / 6</div>
+  <div class="end" id="end"><h2>Top floor.</h2>Industry Week, October 26 to 28. Thank you, Kellie, for building the ladder so many first years climb. Gordon is proud to be on it with you.</div>
+  <div class="foot">made by Darby, Gordon's AI assistant, with love from Gordon</div>
+</div>
+<script>
+// ElevenLabs sound design: ladder rung chime, sunrise indie score, career-panel cheer. Code only mixes.
+const SND=['rung','bed','cheer'];
+let ac=null, master=null, bufs={};
+function audio(){ if(!ac){ try{ ac=new (window.AudioContext||window.webkitAudioContext)(); master=ac.createGain(); master.gain.value=.9; master.connect(ac.destination); SND.forEach(load);}catch(e){} } if(ac&&ac.state==='suspended') ac.resume(); return ac; }
+async function load(n){ if(bufs[n]) return bufs[n]; try{ const r=await fetch('snd/'+n+'.mp3'); const a=await r.arrayBuffer(); bufs[n]=await new Promise((ok,no)=>ac.decodeAudioData(a,ok,no)); }catch(e){} return bufs[n]; }
+async function play(n,vol=1,loop=false,rate=1){ if(!audio()) return null; const b=await load(n); if(!b) return null; const s=ac.createBufferSource(), g=ac.createGain(); s.buffer=b; s.loop=loop; s.playbackRate.value=rate; g.gain.value=vol; s.connect(g).connect(master); s.start(); return {s,g}; }
+const stage=document.getElementById('stage'), spans=[...document.querySelectorAll('.floors span')];
+const c=document.getElementById('c'), x=c.getContext('2d'), D=Math.min(devicePixelRatio||1,2);
+function size(){ c.width=c.clientWidth*D; c.height=c.clientHeight*D; } size(); addEventListener('resize',size);
+let lvl=0, pos=0, bed=null, done=false, sparks=[];
+const LADDER_U=.445, V0=.9, V1=.26;
+stage.addEventListener('pointerdown',()=>{ if(done) return; audio(); if(!bed) play('bed',.45).then(h=>bed=h);
+  lvl++; play('rung',.85,false,1+lvl*.06); spans[lvl-1].classList.add('lit'); document.getElementById('hint').textContent='TAP TO CLIMB · '+lvl+' / 6';
+  const v=V0-(V0-V1)*lvl/6; for(let i=0;i<14;i++) sparks.push({x:LADDER_U*c.width,y:v*c.height,vx:Math.cos(i)*3*D,vy:Math.sin(i)*3*D-2*D,a:1});
+  if(lvl>=6){ done=true; setTimeout(()=>{ play('cheer',.75); stage.classList.add('top-on'); document.getElementById('end').classList.add('on'); document.getElementById('hint').textContent=''; for(let i=0;i<60;i++) sparks.push({x:c.width*(.1+.8*(i%10)/9),y:c.height*.2,vx:Math.sin(i*1.7)*2*D,vy:Math.cos(i*2.3)*2*D,a:1}); },500); } });
+(function loop(){ x.clearRect(0,0,c.width,c.height); const target=lvl/6; pos+=(target-pos)*.1;
+  const cy=(V0-(V0-V1)*pos)*c.height, cx=LADDER_U*c.width; x.fillStyle='#f2c14e'; x.shadowColor='#ffd98a'; x.shadowBlur=22*D; x.beginPath(); x.arc(cx,cy,10*D,0,7); x.fill(); x.shadowBlur=0;
+  sparks.forEach(s=>{ s.x+=s.vx; s.y+=s.vy; s.vy+=.08*D; s.a-=.018; x.globalAlpha=Math.max(s.a,0); x.fillStyle='#ffe3a3'; x.fillRect(s.x,s.y,3*D,3*D); }); x.globalAlpha=1; sparks=sparks.filter(s=>s.a>0);
+  requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>
